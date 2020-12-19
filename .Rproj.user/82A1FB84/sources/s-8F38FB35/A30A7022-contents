@@ -1,0 +1,15 @@
+Package: StatComp20037
+Type: Package
+Title: View and imputate missing data
+Version: 1.0
+Date: 2020-12-16
+Author: Peng Chen
+Maintainer: Peng Chen <chenpeng1@mail.ustc.edu.cn>
+Description: This package helps to view and imputate the missing data.
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.0.5), knitr, rmarkdown, stats, shiny
+LinkingTo: Rcpp
+RoxygenNote: 7.1.1
+Suggests: bootstrap, boot, microbenchmark, DAAG, RANN, energy, Ball
+VignetteBuilder: knitr
+Encoding: UTF-8

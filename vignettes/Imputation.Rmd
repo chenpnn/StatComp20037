@@ -1,0 +1,90 @@
+---
+title: "Imputation"
+author: "Peng Chen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Imputation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Overview
+
+
+__StatComp20037__ is a simple R package developed to view and imputate the missing data. Two functions are considered, namely, _miss.view_ (view the missing data in barplot or heatplot form) and _miss.imp_ (imputate the missing data in the data matrix with differents methods including mean, median and linear regression). 
+
+
+## _miss.view_ and _miss.imp_
+
+
+The source R code for _miss.view_ is as follows:
+```{r}
+
+#view the missing data
+miss.view <- function(data, type='bar'){
+  if (type == 'bar'){
+    miss.num <- apply(is.na(data), 2, sum)
+    barplot(miss.num, col='red')
+  } else if (type == 'heat') {
+    data <- apply(is.na(data), 2, as.numeric)
+    heatmap(data,  Rowv = NA, Colv = NA,
+            col = colorRampPalette(colors = c("white",'white',"red"))(100))
+  } else {
+    print('error: the type should be bar or heat')
+  }
+}
+```
+
+
+The source R code for _miss.imp_ is as follows:
+```{r}
+##imputate the missing data
+miss.imp <- function(data, method='mean'){
+  library(stats)
+  m <- nrow(data)
+  n <- ncol(data)
+  #imputate with mean
+  if (method == 'mean'){
+    for (j in 1:n){
+      data[,j][is.na(data[,j])] <- mean(data[,j], na.rm = TRUE)
+    }
+  }
+  # imputate with median
+  else if (method == 'median'){
+    for (j in 1:n){
+      data[,j][is.na(data[,j])] <- median(data[,j], na.rm = TRUE)
+    }
+  }
+  #imputate with reg
+  else if (method == 'reg'){
+    s <- which(is.na(data)==TRUE) # the place of missing data
+    x <- s%%m # the rows of the missing data
+    y <- 1 + s %/% m # the columns of the missing data
+    
+    cor <- cor(data, use = "complete.obs") # correlation between columns
+    for (j in 1:n){
+      miss.y <- data[,j] #response y of lm
+      i <- order(abs(cor[j,]))[n-1]
+      miss.x <- data[,i] #variable x of lm
+      res <- lm(miss.y~miss.x)
+      imp <- res$coefficients[1] + res$coefficients[2]*miss.x
+      # imputation with lm prediction
+      for (i in 1:m){
+        if (is.na(miss.y[i])==TRUE & is.na(imp[i])==TRUE){
+          miss.y[i] <- mean(miss.y)
+        } else if (is.na(miss.y[i])==TRUE & is.na(imp[i])==FALSE){
+          miss.y[i] <- imp[i]
+        } else {
+          miss.y[i] <- miss.y[i]
+        }
+      }
+      data[,j] <- miss.y
+    }
+  }
+  else {
+    data <- 'error: the method should be mean, median or reg'
+  }
+  return(data)
+}
+```
