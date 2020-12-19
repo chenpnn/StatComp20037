@@ -13,3 +13,6 @@ RoxygenNote: 7.1.1
 Suggests: bootstrap, boot, microbenchmark, DAAG, RANN, energy, Ball
 VignetteBuilder: knitr
 Encoding: UTF-8
+URL: http://github.com/chenpnn/StatComp20037
+BugReports: http://github.com/chenpnn/StatComp20037/issues
+
