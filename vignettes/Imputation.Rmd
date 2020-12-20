@@ -15,7 +15,10 @@ vignette: >
 __StatComp20037__ is a simple R package developed to view and imputate the missing data. Two functions are considered, namely, _miss.view_ (view the missing data in barplot or heatplot form) and _miss.imp_ (imputate the missing data in the data matrix with differents methods including mean, median and linear regression). 
 
 
-## _miss.view_ and _miss.imp_
+## _miss.view_
+We use two types of plots to display the missing pattern:  
+1. barplot: count the number of missing data of each column and draw the barplot;  
+2. heatplot: plot the matrix with the missing data painted in red.  
 
 
 The source R code for _miss.view_ is as follows:
@@ -36,6 +39,25 @@ miss.view <- function(data, type='bar'){
 }
 ```
 
+View the missing data of the dataset "airquality". 
+```{r}
+data('airquality')
+mat <- as.matrix(airquality)
+
+head(mat)
+
+miss.view(mat, type = 'bar')
+
+miss.view(mat, type = 'heat')
+
+```
+
+
+## _miss.imp_
+We use three methods to imputate the missing data:  
+1. mean: imputate the missing data with the mean of the correspongding column;  
+2. median: imputate the missing data with the median of the correspongding column;  
+3. reg: imputate the columns inturn from left to right;  we use the prediction of the counterpart in the most correlated column (measured by the absolute value of the correlation) if the counterpart is not missing and the mean otherwise.
 
 The source R code for _miss.imp_ is as follows:
 ```{r}
@@ -87,4 +109,19 @@ miss.imp <- function(data, method='mean'){
   }
   return(data)
 }
+```
+
+Imputate the missing data with different methods.
+```{r}
+##imputate with the mean of the corresponding column
+mat.mean <- miss.imp(mat, method = 'mean')
+head(mat.mean)
+
+##imputate with the median of the corresponding column
+mat.med <- miss.imp(mat, method = 'median')
+head(mat.med)
+
+##imputate with linear regression regression
+mat.reg <- miss.imp(mat, method = 'reg')
+head(mat.reg)
 ```
